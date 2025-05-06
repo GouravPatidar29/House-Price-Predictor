@@ -11,7 +11,39 @@ model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # Set Streamlit title
+# App Title
 st.title("California Housing Price Predictor")
+
+# Guidance Section
+st.markdown("### 🧠 Input Guidance")
+st.info("""
+Use this guide to understand what values to enter. All values should be based on local area data.
+Below is a summary of typical value ranges from the California housing dataset.
+""")
+
+try:
+    import pandas as pd
+    housing = pd.read_csv("housing.csv")
+    housing["total_bedrooms"] = housing["total_bedrooms"].fillna(housing["total_bedrooms"].median())
+
+    st.markdown("#### 📈 Dataset Summary (Quick Reference)")
+    st.write(housing[[
+        'median_income', 'housing_median_age', 'total_rooms',
+        'total_bedrooms', 'population', 'households'
+    ]].describe())
+    
+    st.markdown("#### 🌍 Sample Coordinates by City")
+    st.table({
+        "City": ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "Fresno"],
+        "Latitude": [34.05, 37.77, 32.72, 38.58, 36.74],
+        "Longitude": [-118.24, -122.42, -117.16, -121.49, -119.78]
+    })
+
+    st.markdown("🔗 [Need help finding your Latitude and Longitude? Click here](https://www.latlong.net/)")
+
+except Exception as e:
+    st.warning(f"Could not load dataset summary: {e}")
+
 
 # Define input fields
 median_income = st.number_input("Median Income", min_value=0.0, step=0.1)
