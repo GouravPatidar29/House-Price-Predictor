@@ -58,6 +58,21 @@ try:
 except Exception as e:
     st.warning(f"Could not load dataset summary: {e}")
 
+import seaborn as sns
+
+with st.expander("📊 Click to View Feature Distributions (Histograms)"):
+    numeric_cols = ["median_income", "housing_median_age", "total_rooms", 
+                    "total_bedrooms", "population", "households"]
+
+    for col in numeric_cols:
+        st.subheader(f"Distribution of `{col}`")
+        fig, ax = plt.subplots(figsize=(8, 3))
+        sns.histplot(housing[col], bins=30, kde=False, ax=ax, color="#1f77b4")
+        ax.set_xlabel(col.replace("_", " ").title())
+        ax.set_ylabel("Frequency")
+        ax.grid(True, linestyle='--', alpha=0.5)
+        st.pyplot(fig)
+
 
 # Define input fields
 median_income = st.number_input("Median Income", min_value=0.0, step=0.1)
