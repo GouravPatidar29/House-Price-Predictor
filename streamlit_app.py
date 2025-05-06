@@ -22,11 +22,9 @@ Below is a summary of typical value ranges from the California housing dataset.
 """)
 
 try:
-    import pandas as pd
     housing = pd.read_csv("housing.csv")
-   import pandas as pd
 
-st.markdown("#### 📋 Recommended Input Ranges (Based on Dataset Statistics)")
+   st.markdown("#### 📋 Recommended Input Ranges (Based on Dataset Statistics)")
 
 reference_data = {
     "Feature": [
