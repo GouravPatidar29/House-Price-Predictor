@@ -1,7 +1,7 @@
-
 import streamlit as st
 import numpy as np
 import joblib
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
@@ -11,7 +11,6 @@ model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # Set Streamlit title
-# App Title
 st.title("California Housing Price Predictor")
 
 # Guidance Section
@@ -23,41 +22,36 @@ Below is a summary of typical value ranges from the California housing dataset.
 
 try:
     housing = pd.read_csv("housing.csv")
+    housing["total_bedrooms"] = housing["total_bedrooms"].fillna(housing["total_bedrooms"].median())
 
-   st.markdown("#### 📋 Recommended Input Ranges (Based on Dataset Statistics)")
-
-reference_data = {
-    "Feature": [
-        "Median Income ($10k)",
-        "Housing Median Age",
-        "Total Rooms",
-        "Total Bedrooms",
-        "Population",
-        "Households"
-    ],
-    "Min": [0.5, 1, 2, 1, 3, 1],
-    "25%": [2.56, 18, 1447.75, 297, 787, 280],
-    "Median": [3.53, 29, 2127, 435, 1166, 409],
-    "75%": [4.74, 37, 3148, 643.25, 1725, 605],
-    "Max": [15.0, 52, 39320, 6445, 35682, 6082],
-    "Recommended Range": [
-        "2.5 - 5.0", "15 - 40", "1500 - 4000",
-        "300 - 700", "800 - 2000", "300 - 700"
-    ]
-}
-
-st.table(pd.DataFrame(reference_data))
+    st.markdown("#### 📋 Recommended Input Ranges (Based on Dataset Statistics)")
+    reference_data = {
+        "Feature": [
+            "Median Income ($10k)", "Housing Median Age", "Total Rooms",
+            "Total Bedrooms", "Population", "Households"
+        ],
+        "Min": [0.5, 1, 2, 1, 3, 1],
+        "25%": [2.56, 18, 1447.75, 297, 787, 280],
+        "Median": [3.53, 29, 2127, 435, 1166, 409],
+        "75%": [4.74, 37, 3148, 643.25, 1725, 605],
+        "Max": [15.0, 52, 39320, 6445, 35682, 6082],
+        "Recommended Range": [
+            "2.5 - 5.0", "15 - 40", "1500 - 4000",
+            "300 - 700", "800 - 2000", "300 - 700"
+        ]
+    }
+    st.table(pd.DataFrame(reference_data))
 
     with st.expander("🔎 Click to View Dataset Insights"):
         st.write(housing.describe())
         st.dataframe(housing.sample(3))
-    
+
     st.markdown("#### 🌍 Sample Coordinates by City")
-    st.table({
+    st.table(pd.DataFrame({
         "City": ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "Fresno"],
         "Latitude": [34.05, 37.77, 32.72, 38.58, 36.74],
         "Longitude": [-118.24, -122.42, -117.16, -121.49, -119.78]
-    })
+    }))
 
     st.markdown("🔗 [Need help finding your Latitude and Longitude? Click here](https://www.latlong.net/)")
 
