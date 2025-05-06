@@ -1,0 +1,96 @@
+
+import streamlit as st
+import numpy as np
+import joblib
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import cross_val_score
+
+# Load trained model and scaler
+model = joblib.load("xgb_model.pkl")
+scaler = joblib.load("scaler.pkl")
+
+# Set Streamlit title
+st.title("California Housing Price Predictor")
+
+# Define input fields
+median_income = st.number_input("Median Income", min_value=0.0, step=0.1)
+housing_median_age = st.number_input("Housing Median Age", min_value=1, step=1)
+total_rooms = st.number_input("Total Rooms", min_value=1, step=1)
+total_bedrooms = st.number_input("Total Bedrooms", min_value=1, step=1)
+population = st.number_input("Population", min_value=1, step=1)
+households = st.number_input("Households", min_value=1, step=1)
+latitude = st.number_input("Latitude", min_value=32.0, max_value=42.0, step=0.01)
+longitude = st.number_input("Longitude", min_value=-124.0, max_value=-114.0, step=0.01)
+
+ocean_proximity = st.selectbox("Ocean Proximity", [
+    "INLAND", "<1H OCEAN", "NEAR OCEAN", "NEAR BAY", "ISLAND"
+])
+
+# Map label to encoding (from LabelEncoder used during training)
+ocean_proximity_map = {
+    "INLAND": 0,
+    "<1H OCEAN": 1,
+    "NEAR OCEAN": 2,
+    "NEAR BAY": 3,
+    "ISLAND": 4
+}
+
+# Convert input to model format
+if st.button("Predict House Price"):
+    input_data = np.array([[median_income, housing_median_age, total_rooms,
+                            total_bedrooms, population, households,
+                            latitude, longitude, ocean_proximity_map[ocean_proximity]]])
+    
+    # Scale input
+    input_scaled = scaler.transform(input_data)
+
+    # Make prediction
+    prediction = model.predict(input_scaled)[0]
+    inr_price = prediction * 83  # Conversion from USD to INR
+    st.success(f"Predicted House Price: ₹{inr_price:,.2f}")
+
+# Model Evaluation Dashboard
+st.header("📊 Model Evaluation Metrics")
+
+if st.checkbox("Show Evaluation Metrics"):
+    try:
+        # Load or recreate training data here if needed (ensure consistency with actual app)
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+
+        housing = pd.read_csv("E:\phy\minort\.ipynb_checkpoints\housing.csv")
+        housing["total_bedrooms"] = housing["total_bedrooms"].fillna(housing["total_bedrooms"].median())
+        housing["ocean_proximity"] = housing["ocean_proximity"].map(ocean_proximity_map)
+
+        X = housing.drop("median_house_value", axis=1)
+        y = housing["median_house_value"]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        X_train_scaled = scaler.transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+
+        y_train_pred = model.predict(X_train_scaled)
+        y_test_pred = model.predict(X_test_scaled)
+
+        train_rmse = np.sqrt(mean_squared_error(y_train, y_train_pred))
+        test_rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+        cv_rmse = np.mean(np.sqrt(-cross_val_score(model, X_train_scaled, y_train, cv=5, scoring='neg_mean_squared_error', n_jobs=-1)))
+
+        st.write(f"**Train RMSE:** {train_rmse:.2f}")
+        st.write(f"**Test RMSE:** {test_rmse:.2f}")
+        st.write(f"**Cross-Validation RMSE:** {cv_rmse:.2f}")
+        st.write(f"**Test RMSE (INR):** ₹{test_rmse * 83:,.2f}")
+
+        # Feature importance plot
+        st.subheader("🔍 Feature Importance")
+        importance = model.feature_importances_
+        features = X.columns
+
+        fig, ax = plt.subplots()
+        ax.barh(features, importance)
+        ax.set_xlabel("Importance Score")
+        ax.set_title("Feature Importance")
+        st.pyplot(fig)
+    except Exception as e:
+        st.error(f"Error displaying metrics: {e}")
