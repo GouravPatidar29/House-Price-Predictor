@@ -24,13 +24,35 @@ Below is a summary of typical value ranges from the California housing dataset.
 try:
     import pandas as pd
     housing = pd.read_csv("housing.csv")
-    housing["total_bedrooms"] = housing["total_bedrooms"].fillna(housing["total_bedrooms"].median())
+   import pandas as pd
 
-    st.markdown("#### 📈 Dataset Summary (Quick Reference)")
-    st.write(housing[[
-        'median_income', 'housing_median_age', 'total_rooms',
-        'total_bedrooms', 'population', 'households'
-    ]].describe())
+st.markdown("#### 📋 Recommended Input Ranges (Based on Dataset Statistics)")
+
+reference_data = {
+    "Feature": [
+        "Median Income ($10k)",
+        "Housing Median Age",
+        "Total Rooms",
+        "Total Bedrooms",
+        "Population",
+        "Households"
+    ],
+    "Min": [0.5, 1, 2, 1, 3, 1],
+    "25%": [2.56, 18, 1447.75, 297, 787, 280],
+    "Median": [3.53, 29, 2127, 435, 1166, 409],
+    "75%": [4.74, 37, 3148, 643.25, 1725, 605],
+    "Max": [15.0, 52, 39320, 6445, 35682, 6082],
+    "Recommended Range": [
+        "2.5 - 5.0", "15 - 40", "1500 - 4000",
+        "300 - 700", "800 - 2000", "300 - 700"
+    ]
+}
+
+st.table(pd.DataFrame(reference_data))
+
+    with st.expander("🔎 Click to View Dataset Insights"):
+        st.write(housing.describe())
+        st.dataframe(housing.sample(3))
     
     st.markdown("#### 🌍 Sample Coordinates by City")
     st.table({
