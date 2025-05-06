@@ -61,27 +61,35 @@ except Exception as e:
 
 
 
-with st.expander("📊 Click to View Feature Distributions (Histograms)"):
-    numeric_cols = ["median_income", "housing_median_age", "total_rooms", 
-                    "total_bedrooms", "population", "households"]
+with st.expander("📊 Click to View Feature Distributions"):
+    tab1, tab2 = st.tabs(["📈 Histograms", "🗺️ Location Map"])
 
-    for col in numeric_cols:
-        st.subheader(f"Distribution of `{col}`")
-        fig, ax = plt.subplots(figsize=(8, 3))
-        sns.histplot(housing[col], bins=30, kde=False, ax=ax, color="#1f77b4")
-        ax.set_xlabel(col.replace("_", " ").title())
-        ax.set_ylabel("Frequency")
-        ax.grid(True, linestyle='--', alpha=0.5)
+    with tab1:
+        st.markdown("### Feature Histograms")
+        numeric_cols = ["median_income", "housing_median_age", "total_rooms", 
+                        "total_bedrooms", "population", "households"]
+
+        for i in range(0, len(numeric_cols), 3):  # 3 plots per row
+            cols = st.columns(3)
+            for j, col in enumerate(numeric_cols[i:i+3]):
+                with cols[j]:
+                    st.markdown(f"**{col.replace('_', ' ').title()}**")
+                    fig, ax = plt.subplots(figsize=(4, 2.5))
+                    sns.histplot(housing[col], bins=30, kde=False, ax=ax, color="#1f77b4")
+                    ax.set_xlabel("")
+                    ax.set_ylabel("")
+                    ax.grid(True, linestyle='--', alpha=0.4)
+                    st.pyplot(fig)
+
+    with tab2:
+        st.markdown("### 📍 California Housing Prices by Location")
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sc = ax.scatter(housing["longitude"], housing["latitude"],
+                        c=housing["median_house_value"], cmap="coolwarm", alpha=0.6)
+        plt.colorbar(sc, label="House Value")
+        ax.set_xlabel("Longitude")
+        ax.set_ylabel("Latitude")
         st.pyplot(fig)
-    fig, ax = plt.subplots()
-    sc = ax.scatter(housing["longitude"], housing["latitude"],
-                c=housing["median_house_value"], cmap="coolwarm", alpha=0.6)
-    plt.colorbar(sc, label="House Value")
-    ax.set_xlabel("Longitude")
-    ax.set_ylabel("Latitude")
-    ax.set_title("📍 California Housing Prices by Location")
-    st.pyplot(fig)
-
 
 # Define input fields
 median_income = st.number_input("Median Income", min_value=0.0, step=0.1)
