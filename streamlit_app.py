@@ -59,7 +59,7 @@ if st.checkbox("Show Evaluation Metrics"):
         import pandas as pd
         from sklearn.model_selection import train_test_split
 
-        housing = pd.read_csv("E:\phy\minort\.ipynb_checkpoints\housing.csv")
+        housing = pd.read_csv("/workspaces/House-Price-Predictor/housing.csv")
         housing["total_bedrooms"] = housing["total_bedrooms"].fillna(housing["total_bedrooms"].median())
         housing["ocean_proximity"] = housing["ocean_proximity"].map(ocean_proximity_map)
 
