@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
+import seaborn as sns
 
 # Load trained model and scaler
 model = joblib.load("xgb_model.pkl")
@@ -58,7 +59,7 @@ try:
 except Exception as e:
     st.warning(f"Could not load dataset summary: {e}")
 
-import seaborn as sns
+
 
 with st.expander("📊 Click to View Feature Distributions (Histograms)"):
     numeric_cols = ["median_income", "housing_median_age", "total_rooms", 
