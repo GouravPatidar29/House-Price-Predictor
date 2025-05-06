@@ -73,6 +73,14 @@ with st.expander("📊 Click to View Feature Distributions (Histograms)"):
         ax.set_ylabel("Frequency")
         ax.grid(True, linestyle='--', alpha=0.5)
         st.pyplot(fig)
+    fig, ax = plt.subplots()
+    sc = ax.scatter(housing["longitude"], housing["latitude"],
+                c=housing["median_house_value"], cmap="coolwarm", alpha=0.6)
+    plt.colorbar(sc, label="House Value")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_title("📍 California Housing Prices by Location")
+    st.pyplot(fig)
 
 
 # Define input fields
