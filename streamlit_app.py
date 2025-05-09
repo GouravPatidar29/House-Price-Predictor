@@ -12,7 +12,7 @@ model = joblib.load("xgb_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # Set Streamlit title
-st.title("California Housing Price Predictor")
+st.title(" Housing Price Predictor")
 
 # Guidance Section
 st.markdown("### 🧠 Input Guidance")
