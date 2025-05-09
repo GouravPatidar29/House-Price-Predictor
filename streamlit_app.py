@@ -82,7 +82,7 @@ with st.expander("📊 Click to View Feature Distributions"):
                     st.pyplot(fig)
 
     with tab2:
-        st.markdown("### 📍 California Housing Prices by Location")
+        st.markdown("### 📍 Housing Prices by Location")
         fig, ax = plt.subplots(figsize=(8, 4))
         sc = ax.scatter(housing["longitude"], housing["latitude"],
                         c=housing["median_house_value"], cmap="coolwarm", alpha=0.6)
